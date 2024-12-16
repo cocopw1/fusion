@@ -112,6 +112,10 @@ async def check_ev(interaction: discord.Interaction):
         content+= str(user)+"\n"
     emb = discord.Embed(description=content)
     await interaction.response.send_message(embed=emb)
+@bot.tree.command(name="rib", description="envoie le rib de fusion", guild=discord.Object(id=guild_id))
+async def rib(interaction: discord.Interaction):
+    emb = discord.Embed(title="le RIB de fusion",description="IBAN : FR76 1790 6000 9020 6106 4500 097\nBIC : AGRIFRPP879")
+    await  interaction.response.send_message(content="tu as le rib maintenant paye",embed=emb)
 
 # Lancer le bot
 ftoken = open("token.pvt", "r")
