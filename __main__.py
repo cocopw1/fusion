@@ -13,8 +13,25 @@ def loaddb() -> list[user.user]:
     for da in data:
         Users.append(user.user(da['id'],da['name'],da['amt'],da['path']))
     print(Users)
+    db.close()
     return Users;
-        
+
+def writedb(Users:list[user.user]):
+    db=open("db.json","w");
+    str = """{
+            "user":["""
+    cpt = 0
+    for user in Users:
+        str+=user.tojson();
+        if (cpt==len(Users)-1):
+            continue;
+        str+=""",
+        """
+    str+="""]
+    }"""
+    print(str)
+    db.write(str);
+    db.close()
 Users:list[user.user]
 inadduser=[]
 
@@ -41,17 +58,26 @@ async def on_ready():
         print(f"Erreur de chargement de la db: {e}")
 
 @bot.tree.command(name="dette", description="Gérer les dettes d'un utilisateur", guild=discord.Object(id=guild_id))
-@app_commands.describe(user="Mention de l'utilisateur", amount="Montant de la dette")
-async def dette(interaction: discord.Interaction, user: discord.Member = None, amount: float = None):
+@app_commands.describe(member="Mention de l'utilisateur", amount="Montant de la dette")
+async def dette(interaction: discord.Interaction, member: discord.Member = None, amount: float = None):
     if amount is None:
         amount = 0.7;
-    if user is None:
+    if member is None:
         # Mise à jour de la dette pour l'auteur
-        await interaction.response.send_message(f"Votre dette est maintenant de {amount:.2f}.")
+        Users = loaddb()
+        user  =next((user for user in Users if user.id == interaction.user.id), None)
+        if (user):
+            amount+=user.amt
+            await interaction.response.send_message(f"Votre dette est maintenant de {amount:.2f}.")
+            user.amt = amount;
+            writedb(Users)
+        else:
+            await interaction.response.send_message("Vous n'avez pas la permission de prendre une dette", ephemeral=True)
+
     else:
         if has_role(interaction.user, "BG"): 
             # Mise à jour de la dette pour un autre utilisateur
-            await interaction.response.send_message(f"La dette de {user.display_name} est maintenant de {amount:.2f}.")
+            await interaction.response.send_message(f"La dette de {member.display_name} est maintenant de {amount:.2f}.")
         else:
             await interaction.response.send_message("Vous n'avez pas la permission de modifier les dettes des autres.", ephemeral=True)
 
@@ -59,6 +85,7 @@ async def dette(interaction: discord.Interaction, user: discord.Member = None, a
 @app_commands.describe(member="Membre à ajouter")
 @app_commands.checks.has_permissions(administrator=True)
 async def add(interaction: discord.Interaction, member: discord.Member):
+    
     if has_role(interaction.user, "Président de l'assosiation fusion"):
         if not member.bot:
             await member.create_dm()
@@ -69,6 +96,17 @@ async def add(interaction: discord.Interaction, member: discord.Member):
             await interaction.response.send_message("Vous ne pouvez pas ajouter un bot.", ephemeral=True)
     else:
         await interaction.response.send_message("Vous n'avez pas la permission d'exécuter cette commande.", ephemeral=True)
+
+
+@bot.tree.command(name="checkev", description="affiche la dette de tout le monde", guild=discord.Object(id=guild_id))
+@app_commands.checks.has_permissions(administrator=True)
+async def check_ev(interaction: discord.Interaction):
+    Users = loaddb()
+    content=''
+    for user in Users:
+        content+= str(user)+"\n"
+    emb = discord.Embed(description=content)
+    await interaction.response.send_message(embed=emb)
 
 # Lancer le bot
 ftoken = open("token.pvt", "r")
