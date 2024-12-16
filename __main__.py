@@ -76,8 +76,13 @@ async def dette(interaction: discord.Interaction, member: discord.Member = None,
 
     else:
         if has_role(interaction.user, "BG"): 
-            # Mise à jour de la dette pour un autre utilisateur
-            await interaction.response.send_message(f"La dette de {member.display_name} est maintenant de {amount:.2f}.")
+            Users = loaddb()
+            user  =next((user for user in Users if user.id == member.id), None)
+            if (user):
+                amount+=user.amt
+                # Mise à jour de la dette pour un autre utilisateur
+                await interaction.response.send_message(f"La dette de {member.display_name} est maintenant de {amount:.2f}.")
+            await interaction.response.send_message(f"{member.display_name} n'a pas la permission de prendre une dette", ephemeral=True)
         else:
             await interaction.response.send_message("Vous n'avez pas la permission de modifier les dettes des autres.", ephemeral=True)
 
