@@ -1,0 +1,10 @@
+{
+    "user":[
+        {
+            "id":0,
+            "name":"test_user0",
+            "amt":0,
+            "lien":"/"
+        }
+]
+}
