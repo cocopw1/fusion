@@ -87,8 +87,13 @@ async def dette(interaction: discord.Interaction, member: discord.Member = None,
 async def add(interaction: discord.Interaction, member: discord.Member):
     
     if has_role(interaction.user, "Président de l'assosiation fusion"):
+        adddb = loadadddb()
         await interaction.response.defer()
-        if not member.bot:
+        aduser  =next((user for user in adddb if user.id == interaction.user.id), None)
+        db = loadadddb()
+        await interaction.response.defer()
+        user  =next((user for user in db if user.id == interaction.user.id), None)
+        if ((not member.bot)and (not user)and (not aduser)):
             await member.create_dm()
             f = discord.File("RAW.png",filename="RAW.png")
             await member.dm_channel.send(content="merci de bien vouloir renvoyer ce fichier signer",file=f)
