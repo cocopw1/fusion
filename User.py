@@ -30,7 +30,7 @@ class user:
     def getdette(self):
         return self.amt;
     def __str__(self):
-        return f"{self.name}' '{self.amt}"
+        return f"{self.name} : {self.amt}"
     def tojson(self):
         i = "{"
         o ="}"
