@@ -52,7 +52,7 @@ async def on_ready():
     except Exception as e:
         print(f"Erreur de chargement de la db: {e}")
 
-@bot.tree.command(name="help",description="affiche l'aide")
+@bot.tree.command(name="help",description="affiche l'aide", guild=discord.Object(id=guild_id))
 async def help(interaction:discord.Interaction):
     interaction.response.send_message("""# 1.0.1
 ```
