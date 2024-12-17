@@ -91,7 +91,6 @@ async def add(interaction: discord.Interaction, member: discord.Member):
         await interaction.response.defer()
         aduser  =next((user for user in adddb if user.id == interaction.user.id), None)
         db = loadadddb()
-        await interaction.response.defer()
         user  =next((user for user in db if user.id == interaction.user.id), None)
         if ((not member.bot)and (not user)and (not aduser)):
             await member.create_dm()
