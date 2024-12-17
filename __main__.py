@@ -52,6 +52,45 @@ async def on_ready():
     except Exception as e:
         print(f"Erreur de chargement de la db: {e}")
 
+@bot.tree.command(name="help",description="affiche l'aide")
+async def help(interaction:discord.Interaction):
+    interaction.response.send_message("""# 1.0.1
+```
+pour le 
+/add
+/toverify
+/validate
+
+/add nécesite le role pres : permet de lancer la procedure d'ajout de la personne en argument member
+
+ensuite 
+/toverify
+permet de faire verifier le fichier png au pres passer sous forme d'url (envoyer dans le channel puis copier lien)en argument
+/validate nessecite le role pres
+permet de valider le fichier d'ajout envoyer par @member en argument
+```
+```
+pour le /dette
+si role @BG
+  peut modifier la dette d'autrui si il est ajouter au préalable
+sinon 
+  permet de modifier sa propre dette si ajouter au préalable
+
+default value
+amount = 0.7
+member = self
+```
+```
+pour le 
+
+/help affiche l'aide
+                                      
+/rib rien cela envoie juste le rib
+
+/check_ev
+permet au admin (extend sur le serveur de vrai fusion BG) de check la dette de tout le monde
+```""")
+
 @bot.tree.command(name="dette", description="Gérer les dettes d'un utilisateur", guild=discord.Object(id=guild_id))
 @app_commands.describe(member="Mention de l'utilisateur", amount="Montant de la dette")
 async def dette(interaction: discord.Interaction, member: discord.Member = None, amount: float = None):
