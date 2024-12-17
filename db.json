@@ -1,10 +1,8 @@
 {
-    "user":[
-        {
+            "user":[{
             "id":0,
             "name":"test_user0",
             "amt":0,
             "path":"./rated/test.jpg"
-        }
-]
-}
+        }]
+    }
