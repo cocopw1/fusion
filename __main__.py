@@ -54,8 +54,7 @@ async def on_ready():
 
 @bot.tree.command(name="help",description="affiche l'aide", guild=discord.Object(id=guild_id))
 async def help(interaction:discord.Interaction):
-    interaction.response.send_message("""# 1.0.1
-```
+    str ="""```
 pour le 
 /add
 /toverify
@@ -89,7 +88,8 @@ pour le
 
 /check_ev
 permet au admin (extend sur le serveur de vrai fusion BG) de check la dette de tout le monde
-```""")
+```"""
+    await interaction.response.send_message(str)
 
 @bot.tree.command(name="dette", description="Gérer les dettes d'un utilisateur", guild=discord.Object(id=guild_id))
 @app_commands.describe(member="Mention de l'utilisateur", amount="Montant de la dette")
