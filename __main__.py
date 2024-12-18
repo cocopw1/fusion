@@ -91,7 +91,7 @@ async def on_message(message:discord.Message):
                     fi = discord.File(user.path)
                     await message.channel.send(content="le président doit maintenant valider votre document")
                     pres =await  get_role_by_name(bot=bot,guild_id=int(guild_id),role_name="Président de l'assosiation fusion")
-                    confchan =await  get_channel_by_id(bot=bot,channel_id=1318579901816897586)
+                    confchan =await  get_channel_by_id(bot=bot,channel_id=1318579901816897586) # TODO: change me -> conf vrai fusion
                     if ((pres)and(confchan)):
                         await confchan.send(content=f"{pres.mention} faites /validate {message.author.mention} pour valider ce document",file=fi)
                         writeadddb(adddb);
