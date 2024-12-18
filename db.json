@@ -4,5 +4,17 @@
             "name":"test_user0",
             "amt":0,
             "path":"./rated/test.jpg"
+        },
+        {
+            "id":691935403191697438,
+            "name":"leiavador",
+            "amt":0,
+            "path":"./rated/691935403191697438.png"
+        },
+        {
+            "id":410566152394244106,
+            "name":"cocopw",
+            "amt":0,
+            "path":"./rated/410566152394244106.pdf"
         }]
     }

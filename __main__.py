@@ -108,8 +108,6 @@ pour le
 /add nécesite le role pres : permet de lancer la procedure d'ajout de la personne en argument member
 
 ensuite 
-/toverify
-permet de faire verifier le fichier png au pres passer sous forme d'url (envoyer dans le channel puis copier lien)en argument
 /validate nessecite le role pres
 permet de valider le fichier d'ajout envoyer par @member en argument
 ```
