@@ -14,7 +14,25 @@ guild_id = "1318570459016724570"  # todo :  remplacer par l'id du serveur de fus
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=">", intents=intents)
 
-
+async def get_channel_by_id(bot: discord.Client, channel_id: int):
+    """
+    Retourne l'objet TextChannel correspondant à un ID donné.
+    
+    :param bot: Instance du bot ou client Discord.
+    :param channel_id: ID du channel à récupérer.
+    :return: Objet TextChannel si trouvé, sinon None.
+    """
+    channel = bot.get_channel(channel_id)  # Recherche dans le cache
+    if channel is None:
+        try:
+            channel = await bot.fetch_channel(channel_id)  # Récupération directe via l'API Discord
+        except discord.NotFound:
+            print(f"Le channel avec l'ID {channel_id} n'existe pas.")
+        except discord.Forbidden:
+            print(f"Accès refusé au channel avec l'ID {channel_id}.")
+        except discord.HTTPException as e:
+            print(f"Erreur HTTP lors de la tentative de récupération du channel : {e}")
+    return channel
 async def get_role_by_name(bot: commands.Bot, guild_id: int, role_name: str) -> discord.Role | None:
     """
     Récupère l'objet Role à partir de son nom dans une guild en utilisant l'ID.
@@ -52,6 +70,33 @@ async def on_ready():
     except Exception as e:
         print(f"Erreur de chargement de la db: {e}")
 
+@bot.event
+async def on_message(message:discord.Message):
+    print("test")
+    # Vérifiez si le message contient une pièce jointe
+    if message.attachments:
+        for attachment in message.attachments:
+            # Vérifiez si le fichier est un PDF
+            if (attachment.filename.endswith(".pdf") or attachment.filename.endswith(".docx")):
+                adddb = loadadddb()
+                user  =next((user for user in adddb if user.id == message.author.id), None)
+                if (user):
+                    if (attachment.filename.endswith(".pdf")):
+                        user.path= f"./unvalidate/{user.id}.pdf"
+                    if (attachment.filename.endswith(".docx")):
+                        user.path= f"./unvalidate/{user.id}.docx"
+                    await attachment.save(user.path)
+                    
+                    print(f"Fichier enregistré sous : {user.path}")
+                    fi = discord.File(user.path)
+                    await message.channel.send(content="le président doit maintenant valider votre document")
+                    pres =await  get_role_by_name(bot=bot,guild_id=int(guild_id),role_name="Président de l'assosiation fusion")
+                    confchan =await  get_channel_by_id(bot=bot,channel_id=1318579901816897586)
+                    if ((pres)and(confchan)):
+                        await confchan.send(content=f"{pres.mention} faites /validate {message.author.mention} pour valider ce document",file=fi)
+                        writeadddb(adddb);
+                    else: 
+                        await message.channel.send(content="something went wrong");
 @bot.tree.command(name="help",description="affiche l'aide", guild=discord.Object(id=guild_id))
 async def help(interaction:discord.Interaction):
     str ="""```
@@ -133,7 +178,7 @@ async def add(interaction: discord.Interaction, member: discord.Member):
         user  =next((user for user in db if user.id == interaction.user.id), None)
         if ((not member.bot)and (not user)and (not aduser)):
             await member.create_dm()
-            f = discord.File("RAW.png",filename="RAW.png")
+            f = discord.File("RAW.docx",filename="RAW.docx")
             await member.dm_channel.send(content="merci de bien vouloir renvoyer ce fichier signer",file=f)
             add = loadadddb()
             add.append(User.inadduser(member.id,member.name))
@@ -143,29 +188,29 @@ async def add(interaction: discord.Interaction, member: discord.Member):
             await interaction.followup.send("Vous ne pouvez pas ajouter un bot.", ephemeral=True)
     else:
         await interaction.response.send_message("Vous n'avez pas la permission d'exécuter cette commande.", ephemeral=True)
-@bot.tree.command(name="toverify",description="permet de renvoyer l'image au bot",guild=discord.Object(id=guild_id))
-@app_commands.describe(file="le document")
-async def toverify(interaction: discord.Interaction,file:str):
-    adddb = loadadddb()
-    await interaction.response.defer()
-    user  =next((user for user in adddb if user.id == interaction.user.id), None)
-    if (user):
-        text = requests.get(file).content
-        f = open(f"./unvalidate/{user.id}.png","wb")
-        f.write(text);
-        f.close();
-        user.path= f"./unvalidate/{user.id}.png"
-        fi = discord.File(f"./unvalidate/{user.id}.png")
-        await interaction.followup.send(content="le président doit maintenant valider votre document",ephemeral=True)
-        pres =await  get_role_by_name(bot=bot,guild_id=int(guild_id),role_name="Président de l'assosiation fusion")
-        if (pres):
-            await interaction.channel.send(content=f"{pres.mention} faites /validate {interaction.user.mention} pour valider ce document",file=fi)
-            writeadddb(adddb);
-        else: 
-            await interaction.channel.send(content="something went wrong");
-    else:
-        await interaction.response.send_message("Vous n'etes pas sur la liste d'ajout", ephemeral=True)
-    return
+# @bot.tree.command(name="toverify",description="permet de renvoyer l'image au bot",guild=discord.Object(id=guild_id))
+# @app_commands.describe(file="le document")
+# async def toverify(interaction: discord.Interaction,file:str):
+    # adddb = loadadddb()
+    # await interaction.response.defer()
+    # user  =next((user for user in adddb if user.id == interaction.user.id), None)
+    # if (user):
+    #     text = requests.get(file).content
+    #     f = open(f"./unvalidate/{user.id}.pdf","wb")
+    #     f.write(text);
+    #     f.close();
+    #     user.path= f"./unvalidate/{user.id}.pdf"
+    #     fi = discord.File(f"./unvalidate/{user.id}.pdf")
+    #     await interaction.followup.send(content="le président doit maintenant valider votre document",ephemeral=True)
+    #     pres =await  get_role_by_name(bot=bot,guild_id=int(guild_id),role_name="Président de l'assosiation fusion")
+    #     if (pres):
+    #         await interaction.channel.send(content=f"{pres.mention} faites /validate {interaction.user.mention} pour valider ce document",file=fi)
+    #         writeadddb(adddb);
+    #     else: 
+    #         await interaction.channel.send(content="something went wrong");
+    # else:
+    #     await interaction.response.send_message("Vous n'etes pas sur la liste d'ajout", ephemeral=True)
+    # return
 @bot.tree.command(name="validate", description="permet de valider le document",guild=discord.Object(id=guild_id))
 @app_commands.describe(member="Membre à ajouter")
 @app_commands.checks.has_permissions(administrator=True)
@@ -183,8 +228,8 @@ async def validate(interaction: discord.Interaction, member:discord.Member):
                     newdb.append(d)
                 writeadddb(newdb)
                 Users = loaddb()
-                os.system(f"mv {user.path} ./rated/{user.id}.png")
-                user.path = f"./rated/{user.id}.png"
+                os.system(f"mv {user.path} ./rated/{user.id}.pdf")
+                user.path = f"./rated/{user.id}.pdf"
                 Users.append(User.user(user.id,user.name,0,user.path))
                 writedb(Users)
                 await interaction.response.send_message(f"l'utilisateur {member.mention} est maintenant ajouter a la base de donnée")
