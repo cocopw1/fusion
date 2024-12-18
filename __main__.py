@@ -72,7 +72,6 @@ async def on_ready():
 
 @bot.event
 async def on_message(message:discord.Message):
-    print("test")
     # Vérifiez si le message contient une pièce jointe
     if message.attachments:
         for attachment in message.attachments:
