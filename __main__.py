@@ -228,8 +228,12 @@ async def validate(interaction: discord.Interaction, member:discord.Member):
                     newdb.append(d)
                 writeadddb(newdb)
                 Users = loaddb()
-                os.system(f"mv {user.path} ./rated/{user.id}.pdf")
-                user.path = f"./rated/{user.id}.pdf"
+                if user.path.endswith(".pdf"):
+                    os.system(f"mv {user.path} ./rated/{user.id}.pdf")
+                    user.path = f"./rated/{user.id}.pdf"
+                if user.path.endswith(".docx"):
+                    os.system(f"mv {user.path} ./rated/{user.id}.docx")
+                    user.path = f"./rated/{user.id}.docx"
                 Users.append(User.user(user.id,user.name,0,user.path))
                 writedb(Users)
                 await interaction.response.send_message(f"l'utilisateur {member.mention} est maintenant ajouter a la base de donnée")
