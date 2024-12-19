@@ -252,6 +252,53 @@ async def check_ev(interaction: discord.Interaction):
     emb = discord.Embed(description=content)
     await interaction.response.send_message(embed=emb)
 
+@bot.tree.command(name="remove", description="permet de suprimer un User", guild=discord.Object(id=guild_id))
+@app_commands.checks.has_permissions(administrator=True)
+async def check_ev(interaction: discord.Interaction,member:discord.Member):
+    if has_role(interaction.user, "Président de l'assosiation fusion"):
+        Users = loaddb();
+        New:list[User.user] =[]
+        Old:list[User.user] = []
+        for user in Users:
+            print(user.id)
+            if user.id == member.id:
+                Old.append(user)
+                continue
+            
+            New.append(user);
+        writedb(New)
+        print(Old)
+        if len(Old)==0:
+            await interaction.response.send_message(f"{member.mention} n'etait pas en capaciter de prendre des dettes");
+        if len(Old)==1:
+            fi = discord.File(Old[0].path)
+            await interaction.response.send_message(f"la dette de {member.mention} était de {Old[0].amt}",file=fi);
+        if len(Old)>1:
+            await interaction.response.send_message(f"pour une raison inconue {member.mention} était present plusiuers fois dans la db");
+            for o in Old:
+                fi = discord.File(o.path)
+                await interaction.channel.send(f"la dette de {member.mention} était de {o.amt}",file=fi);
+    else:
+        await interaction.response.send_message("vous n'avez pas les droit d'executer cette commande");
+
+
+
+
+@bot.tree.command(name="check", description="affiche la dette de User", guild=discord.Object(id=guild_id))
+async def check(interaction: discord.Interaction,member:discord.Member=None):
+    if not member:
+        member = interaction.user;
+    Users = loaddb()
+    user  =next((user for user in Users if user.id == member.id), None)
+    if(user):
+        if user.amt>0:
+            await interaction.response.send_message(f"la dette de {member.mention} est de {user.amt} €")   
+        elif user.amt<0:
+            await interaction.response.send_message(f"{member.mention} est dans le positif de {user.amt*-1} €")
+        else:
+            await interaction.response.send_message(f"{member.mention} n'as pas de dette pour l'instant")
+    else:
+        await interaction.response.send_message(f"{member.mention} n'as pas le droit de contracter une dette")
 @bot.tree.command(name="rib", description="envoie le rib de fusion", guild=discord.Object(id=guild_id))
 async def rib(interaction: discord.Interaction):
     emb = discord.Embed(title="le RIB de fusion",description="IBAN : FR76 1790 6000 9020 6106 4500 097\nBIC : AGRIFRPP879")
