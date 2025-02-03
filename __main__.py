@@ -185,29 +185,6 @@ async def add(interaction: discord.Interaction, member: discord.Member):
             await interaction.followup.send("Vous ne pouvez pas ajouter un bot.", ephemeral=True)
     else:
         await interaction.response.send_message("Vous n'avez pas la permission d'exécuter cette commande.", ephemeral=True)
-# @bot.tree.command(name="toverify",description="permet de renvoyer l'image au bot",guild=discord.Object(id=guild_id))
-# @app_commands.describe(file="le document")
-# async def toverify(interaction: discord.Interaction,file:str):
-    # adddb = loadadddb()
-    # await interaction.response.defer()
-    # user  =next((user for user in adddb if user.id == interaction.user.id), None)
-    # if (user):
-    #     text = requests.get(file).content
-    #     f = open(f"./unvalidate/{user.id}.pdf","wb")
-    #     f.write(text);
-    #     f.close();
-    #     user.path= f"./unvalidate/{user.id}.pdf"
-    #     fi = discord.File(f"./unvalidate/{user.id}.pdf")
-    #     await interaction.followup.send(content="le président doit maintenant valider votre document",ephemeral=True)
-    #     pres =await  get_role_by_name(bot=bot,guild_id=int(guild_id),role_name="Président de l'assosiation fusion")
-    #     if (pres):
-    #         await interaction.channel.send(content=f"{pres.mention} faites /validate {interaction.user.mention} pour valider ce document",file=fi)
-    #         writeadddb(adddb);
-    #     else: 
-    #         await interaction.channel.send(content="something went wrong");
-    # else:
-    #     await interaction.response.send_message("Vous n'etes pas sur la liste d'ajout", ephemeral=True)
-    # return
 @bot.tree.command(name="validate", description="permet de valider le document",guild=discord.Object(id=guild_id))
 @app_commands.describe(member="Membre à ajouter")
 @app_commands.checks.has_permissions(administrator=True)
