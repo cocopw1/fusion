@@ -14,6 +14,12 @@ guild_id = "1318570459016724570"  # todo :  remplacer par l'id du serveur de fus
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=">", intents=intents)
 
+def pickme(users:list[User.user]) -> User.user:
+    bintotal = sum(user.bin for user in users);
+    
+    
+
+
 async def get_channel_by_id(bot: discord.Client, channel_id: int):
     """
     Retourne l'objet TextChannel correspondant à un ID donné.
@@ -63,6 +69,8 @@ async def on_ready():
     try:
         synced = await bot.tree.sync(guild=discord.Object(id=guild_id))
         print(f"Commandes slash synchronisées: {len(synced)}")
+        for com in synced:
+            print(com);
     except Exception as e:
         print(f"Erreur de synchronisation: {e}")
     try: 
@@ -143,10 +151,16 @@ async def dette(interaction: discord.Interaction, member: discord.Member = None,
         Users = loaddb()
         user  =next((user for user in Users if user.id == interaction.user.id), None)
         if (user):
-            amount+=user.amt
-            await interaction.response.send_message(f"Votre dette est maintenant de {amount:.2f}.")
-            user.amt = amount;
-            writedb(Users)
+            if user.amt < 10:
+                textv = ""
+                if user.amt+amount>10:
+                    textv = "ta dette va dépasser les 10 tu ne pourras pas t'endetter la prochaine fois\n"
+                amount+=user.amt
+                await interaction.response.send_message(f"{textv}Votre dette est maintenant de {amount:.2f}.")
+                user.amt = amount;
+                writedb(Users)
+            else:
+                await interaction.response.send_message(f"Pour toi c'est à ça qu'il sert l'argent de Mamie !?\nTa dette dépasse les 10€ paye avant de pouvoir t'endetter **CAUNAR**")
         else:
             await interaction.response.send_message("Vous n'avez pas la permission de prendre une dette", ephemeral=True)
 
@@ -156,8 +170,37 @@ async def dette(interaction: discord.Interaction, member: discord.Member = None,
             user  =next((user for user in Users if user.id == member.id), None)
             if (user):
                 amount+=user.amt
+                user.amt = amount;
+                writedb(Users)
                 # Mise à jour de la dette pour un autre utilisateur
                 await interaction.response.send_message(f"La dette de {member.display_name} est maintenant de {amount:.2f}.")
+            await interaction.response.send_message(f"{member.display_name} n'a pas la permission de prendre une dette", ephemeral=True)
+        else:
+            await interaction.response.send_message("Vous n'avez pas la permission de modifier les dettes des autres.", ephemeral=True)
+
+@bot.tree.command(name="reset", description="vidée les dettes d'un utilisateur", guild=discord.Object(id=guild_id))
+@app_commands.describe(member="Mention de l'utilisateur")
+async def reset(interaction: discord.Interaction, member: discord.Member = None):
+    if member is None:
+        # Mise à jour de la dette pour l'auteur
+        Users = loaddb()
+        user  =next((user for user in Users if user.id == interaction.user.id), None)
+        if (user):
+                await interaction.response.send_message(f"Votre dette est maintenant reset.")
+                user.amt = 0;
+                writedb(Users)
+        else:
+            await interaction.response.send_message("Vous n'avez pas la permission de prendre une dette", ephemeral=True)
+
+    else:
+        if has_role(interaction.user, "BG"): 
+            Users = loaddb()
+            user  =next((user for user in Users if user.id == member.id), None)
+            if (user):
+                user.amt = 0;
+                writedb(Users)
+                # Mise à jour de la dette pour un autre utilisateur
+                await interaction.response.send_message(f"La dette de {member.display_name} est maintenant reset")
             await interaction.response.send_message(f"{member.display_name} n'a pas la permission de prendre une dette", ephemeral=True)
         else:
             await interaction.response.send_message("Vous n'avez pas la permission de modifier les dettes des autres.", ephemeral=True)
@@ -280,6 +323,8 @@ async def check(interaction: discord.Interaction,member:discord.Member=None):
 async def rib(interaction: discord.Interaction):
     emb = discord.Embed(title="le RIB de fusion",description="IBAN : FR76 1790 6000 9020 6106 4500 097\nBIC : AGRIFRPP879")
     await  interaction.response.send_message(content="tu as le rib maintenant paye",embed=emb)
+
+
 
 # Lancer le bot
 ftoken = open("token.pvt", "r")

@@ -8,7 +8,7 @@ def loaddb() -> list[User.user]:
     data= jons['user']
     Users:list[User.user] = []
     for da in data:
-        Users.append(User.user(da['id'],da['name'],da['amt'],da['path']))
+        Users.append(User.user(da['id'],da['name'],da['amt'],da['path'],da["bin"]))
     print(Users)
     db.close()
     return Users;

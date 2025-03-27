@@ -21,11 +21,12 @@ class inadduser:
             "path":"{self.path}"
         {o}''';
 class user:
-    def __init__(self,id:int,name:str,amt:int,path:str):
+    def __init__(self,id:int,name:str,amt:int,path:str,bin:int):
         self.id =id;
         self.name =name;
         self.amt =amt;
         self.path =path;
+        self.bin = bin;
         pass
     def getdette(self):
         return self.amt;
@@ -38,6 +39,7 @@ class user:
             "id":{self.id},
             "name":"{self.name}",
             "amt":{self.amt},
-            "path":"{self.path}"
+            "path":"{self.path}",
+            "bin":{self.bin}
         {o}''';
 

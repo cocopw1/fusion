@@ -3,18 +3,21 @@
             "id":0,
             "name":"test_user0",
             "amt":0,
-            "path":"./rated/test.jpg"
+            "path":"./rated/test.jpg",
+            "bin":0
         },
         {
             "id":691935403191697438,
             "name":"leiavador",
             "amt":0,
-            "path":"./rated/691935403191697438.png"
+            "path":"./rated/691935403191697438.png",
+            "bin":0
         },
         {
             "id":410566152394244106,
             "name":"cocopw",
-            "amt":0,
-            "path":"./rated/410566152394244106.pdf"
+            "amt":0.7,
+            "path":"./rated/410566152394244106.pdf",
+            "bin":0
         }]
     }
