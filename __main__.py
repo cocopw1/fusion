@@ -170,7 +170,7 @@ async def dette(interaction: discord.Interaction, member: discord.Member = None,
             user  =next((user for user in Users if user.id == member.id), None)
             if (user):
                 amount+=user.amt
-                user.amt = amount;
+                user.amt = round(amount, 2);
                 writedb(Users)
                 # Mise à jour de la dette pour un autre utilisateur
                 await interaction.response.send_message(f"La dette de {member.display_name} est maintenant de {amount:.2f}.")
