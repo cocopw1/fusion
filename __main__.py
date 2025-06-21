@@ -292,12 +292,12 @@ async def check_ev(interaction: discord.Interaction,member:discord.Member):
             await interaction.response.send_message(f"{member.mention} n'etait pas en capaciter de prendre des dettes");
         if len(Old)==1:
             fi = discord.File(Old[0].path)
-            await interaction.response.send_message(f"la dette de {member.mention} était de {Old[0].amt}",file=fi);
+            await interaction.response.send_message(f"la dette de {member.mention} était de {Old[0].amt:.2f}",file=fi);
         if len(Old)>1:
             await interaction.response.send_message(f"pour une raison inconue {member.mention} était present plusiuers fois dans la db");
             for o in Old:
                 fi = discord.File(o.path)
-                await interaction.channel.send(f"la dette de {member.mention} était de {o.amt}",file=fi);
+                await interaction.channel.send(f"la dette de {member.mention} était de {o.amt:.2f}",file=fi);
     else:
         await interaction.response.send_message("vous n'avez pas les droit d'executer cette commande");
 
@@ -312,9 +312,9 @@ async def check(interaction: discord.Interaction,member:discord.Member=None):
     user  =next((user for user in Users if user.id == member.id), None)
     if(user):
         if user.amt>0:
-            await interaction.response.send_message(f"la dette de {member.mention} est de {user.amt} €")   
+            await interaction.response.send_message(f"la dette de {member.mention} est de {user.amt:.2f} €")   
         elif user.amt<0:
-            await interaction.response.send_message(f"{member.mention} est dans le positif de {user.amt*-1} €")
+            await interaction.response.send_message(f"{member.mention} est dans le positif de {user.amt*-1:.2f} €")
         else:
             await interaction.response.send_message(f"{member.mention} n'as pas de dette pour l'instant")
     else:
